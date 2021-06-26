@@ -158,13 +158,11 @@ static void TexMgr_SetFilterModes (gltexture_t *glt)
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
-		filtering = 0;
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 	else if (glt->flags & TEXPREF_LINEAR)
 	{
-		filtering = 1;
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
@@ -178,6 +176,15 @@ static void TexMgr_SetFilterModes (gltexture_t *glt)
 	{
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glmodes[glmode_idx].magfilter);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glmodes[glmode_idx].magfilter);
+	}
+	
+	if (glmode_idx < 3 || glmode_idx > 5 && glmode_idx < 9)
+	{
+		filtering = 0;
+	}
+	else if (glmode_idx > 2 && glmode_idx < 6 || glmode_idx > 8)
+	{
+		filtering = 1;
 	}
 }
 
