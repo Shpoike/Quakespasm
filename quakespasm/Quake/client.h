@@ -361,9 +361,6 @@ extern	cvar_t	r_lerpmove;
 extern	cvar_t	r_particles;
 extern	cvar_t	r_viewmodel_quake;
 
-extern int filtering;
-
-
 #define	MAX_TEMP_ENTITIES			256		//johnfitz -- was 64
 
 extern	client_state_t	cl;
