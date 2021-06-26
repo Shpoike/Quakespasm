@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int filtering;
-
 const int	gl_solid_format = 3;
 const int	gl_alpha_format = 4;
 
@@ -131,6 +129,7 @@ static glmode_t glmodes[] = {
 };
 #define NUM_GLMODES (int)(sizeof(glmodes)/sizeof(glmodes[0]))
 static int glmode_idx = 5; /* trilinear */
+qboolean TexMgr_TextureModeIsLinear;
 
 /*
 ===============
@@ -177,14 +176,14 @@ static void TexMgr_SetFilterModes (gltexture_t *glt)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glmodes[glmode_idx].magfilter);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glmodes[glmode_idx].magfilter);
 	}
-	
-	if (glmode_idx < 3 || glmode_idx > 5 && glmode_idx < 9)
+
+	if (glmodes[glmode_idx].magfilter == GL_LINEAR)
 	{
-		filtering = 0;
+		TexMgr_TextureModeIsLinear = true;
 	}
-	else if (glmode_idx > 2 && glmode_idx < 6 || glmode_idx > 8)
+	else if (glmodes[glmode_idx].magfilter == GL_NEAREST)
 	{
-		filtering = 1;
+		TexMgr_TextureModeIsLinear = false;
 	}
 }
 
@@ -212,13 +211,13 @@ static void TexMgr_TextureMode_f (cvar_t *var)
 				//FIXME: warpimages need to be redrawn, too.
 			}
 
-			if (glmode_idx < 3 || glmode_idx > 5 && glmode_idx < 9)
+			if (glmodes[glmode_idx].magfilter == GL_LINEAR)
 			{
-				filtering = 0;
+				TexMgr_TextureModeIsLinear = true;
 			}
-			else if (glmode_idx > 2 && glmode_idx < 6 || glmode_idx > 8)
+			else if (glmodes[glmode_idx].magfilter == GL_NEAREST)
 			{
-				filtering = 1;
+				TexMgr_TextureModeIsLinear = false;
 			}
 			return;
 		}
