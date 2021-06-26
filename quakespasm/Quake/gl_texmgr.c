@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
+int filtering;
+
 const int	gl_solid_format = 3;
 const int	gl_alpha_format = 4;
 
@@ -156,11 +158,13 @@ static void TexMgr_SetFilterModes (gltexture_t *glt)
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
+		filtering = 0;
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 	else if (glt->flags & TEXPREF_LINEAR)
 	{
+		filtering = 1;
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
@@ -199,6 +203,15 @@ static void TexMgr_TextureMode_f (cvar_t *var)
 					TexMgr_SetFilterModes (glt);
 				Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
 				//FIXME: warpimages need to be redrawn, too.
+			}
+
+			if (glmode_idx < 3 || glmode_idx > 5 && glmode_idx < 9)
+			{
+				filtering = 0;
+			}
+			else if (glmode_idx > 2 && glmode_idx < 6 || glmode_idx > 8)
+			{
+				filtering = 1;
 			}
 			return;
 		}
