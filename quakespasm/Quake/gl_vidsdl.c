@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h"
 #include "bgmusic.h"
 #include "resource.h"
+#include "gl_texmgr.h"
 #if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
 #if defined(USE_SDL2)
 #include <SDL2/SDL.h>
@@ -2169,14 +2170,22 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (filtering == 1)
+			if (TexMgr_TextureModeIsLinear == true)
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (filtering == 0)
+			else if (TexMgr_TextureModeIsLinear == false)
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
-			Cbuf_AddText("toggle r_lerpmodels\n");
-			Cbuf_AddText("toggle r_lerpmove\n");
+			if (r_lerpmodels.value == 1 && r_lerpmove.value == 1)
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
+			else if (!(r_lerpmodels.value == 1 && r_lerpmove.value == 1))
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
 			break;
 		case VID_OPT_PARTICLES:
 			if (r_particles.value == 1)
@@ -2223,14 +2232,22 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (filtering == 1)
+			if (TexMgr_TextureModeIsLinear == true)
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (filtering == 0)
+			else if (TexMgr_TextureModeIsLinear == false)
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
-			Cbuf_AddText("toggle r_lerpmodels\n");
-			Cbuf_AddText("toggle r_lerpmove\n");
+			if (r_lerpmodels.value == 0 && r_lerpmove.value == 0)
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
+			else if (!(r_lerpmodels.value == 0 && r_lerpmove.value == 0))
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
 			break;
 		case VID_OPT_PARTICLES:
 			if (r_particles.value == 1)
@@ -2279,14 +2296,22 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (filtering == 1)
+			if (TexMgr_TextureModeIsLinear == true)
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (filtering == 0)
+			else if (TexMgr_TextureModeIsLinear == false)
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
-			Cbuf_AddText("toggle r_lerpmodels\n");
-			Cbuf_AddText("toggle r_lerpmove\n");
+			if (r_lerpmodels.value == 1 && r_lerpmove.value == 1)
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
+			else if (!(r_lerpmodels.value == 1 && r_lerpmove.value == 1))
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
 			break;
 		case VID_OPT_PARTICLES:
 			if (r_particles.value == 1)
@@ -2374,7 +2399,7 @@ static void VID_MenuDraw (void)
 			break;
 		case VID_OPT_FILTERING:
 			M_Print(16, y, "         Filtering");
-			M_DrawCheckbox(184, y, filtering);
+			M_DrawCheckbox(184, y, (qboolean)TexMgr_TextureModeIsLinear);
 			break;
 		case VID_OPT_INTERPOLATION:
 			M_Print(16, y, "     Interpolation");
