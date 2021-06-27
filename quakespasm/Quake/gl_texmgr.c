@@ -129,7 +129,11 @@ static glmode_t glmodes[] = {
 };
 #define NUM_GLMODES (int)(sizeof(glmodes)/sizeof(glmodes[0]))
 static int glmode_idx = 5; /* trilinear */
-qboolean TexMgr_TextureModeIsLinear;
+
+qboolean TexMgr_TextureModeIsLinear(void)
+{
+	return glmodes[glmode_idx].magfilter == GL_LINEAR; 
+}
 
 /*
 ===============
@@ -176,15 +180,6 @@ static void TexMgr_SetFilterModes (gltexture_t *glt)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glmodes[glmode_idx].magfilter);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glmodes[glmode_idx].magfilter);
 	}
-
-	if (glmodes[glmode_idx].magfilter == GL_LINEAR)
-	{
-		TexMgr_TextureModeIsLinear = true;
-	}
-	else if (glmodes[glmode_idx].magfilter == GL_NEAREST)
-	{
-		TexMgr_TextureModeIsLinear = false;
-	}
 }
 
 /*
@@ -209,15 +204,6 @@ static void TexMgr_TextureMode_f (cvar_t *var)
 					TexMgr_SetFilterModes (glt);
 				Sbar_Changed (); //sbar graphics need to be redrawn with new filter mode
 				//FIXME: warpimages need to be redrawn, too.
-			}
-
-			if (glmodes[glmode_idx].magfilter == GL_LINEAR)
-			{
-				TexMgr_TextureModeIsLinear = true;
-			}
-			else if (glmodes[glmode_idx].magfilter == GL_NEAREST)
-			{
-				TexMgr_TextureModeIsLinear = false;
 			}
 			return;
 		}
