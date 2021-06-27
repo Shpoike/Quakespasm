@@ -2170,9 +2170,9 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (TexMgr_TextureModeIsLinear == true)
+			if (TexMgr_TextureModeIsLinear())
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (TexMgr_TextureModeIsLinear == false)
+			else
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
@@ -2232,9 +2232,9 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (TexMgr_TextureModeIsLinear == true)
+			if (TexMgr_TextureModeIsLinear())
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (TexMgr_TextureModeIsLinear == false)
+			else
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
@@ -2296,9 +2296,9 @@ static void VID_MenuKey (int key)
 			}
 			break;
 		case VID_OPT_FILTERING:
-			if (TexMgr_TextureModeIsLinear == true)
+			if (TexMgr_TextureModeIsLinear())
 				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
-			else if (TexMgr_TextureModeIsLinear == false)
+			else
 				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
 			break;
 		case VID_OPT_INTERPOLATION:
@@ -2399,7 +2399,10 @@ static void VID_MenuDraw (void)
 			break;
 		case VID_OPT_FILTERING:
 			M_Print(16, y, "         Filtering");
-			M_DrawCheckbox(184, y, (qboolean)TexMgr_TextureModeIsLinear);
+			if ((qboolean)TexMgr_TextureModeIsLinear())
+				M_Print(184, y, "linear");
+			else
+				M_Print(184, y, "nearest");
 			break;
 		case VID_OPT_INTERPOLATION:
 			M_Print(16, y, "     Interpolation");
