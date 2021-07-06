@@ -470,6 +470,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Quake\mdfour.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Quake\menu.c"
 				>
 			</File>
