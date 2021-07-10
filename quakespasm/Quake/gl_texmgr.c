@@ -130,6 +130,11 @@ static glmode_t glmodes[] = {
 #define NUM_GLMODES (int)(sizeof(glmodes)/sizeof(glmodes[0]))
 static int glmode_idx = 5; /* trilinear */
 
+qboolean TexMgr_TextureModeIsLinear(void)
+{
+	return glmodes[glmode_idx].magfilter == GL_LINEAR; 
+}
+
 /*
 ===============
 TexMgr_DescribeTextureModes_f -- report available texturemodes
