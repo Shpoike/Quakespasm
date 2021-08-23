@@ -91,6 +91,7 @@ cvar_t		scr_clock = {"scr_clock", "0", CVAR_NONE};
 cvar_t		scr_viewsize = {"viewsize","100", CVAR_ARCHIVE};
 cvar_t		scr_fov = {"fov","90",CVAR_NONE};	// 10 - 170
 cvar_t		scr_fov_adapt = {"fov_adapt","1",CVAR_ARCHIVE};
+cvar_t		scr_viewmodel_fov = {"viewmodel_fov","90",CVAR_NONE};
 cvar_t		scr_conspeed = {"scr_conspeed","500",CVAR_ARCHIVE};
 cvar_t		scr_centertime = {"scr_centertime","2",CVAR_NONE};
 cvar_t		scr_showram = {"showram","1",CVAR_NONE};
@@ -382,9 +383,12 @@ static void SCR_CalcRefdef (void)
 // bound fov
 	if (scr_fov.value < 10)
 		Cvar_SetQuick (&scr_fov, "10");
+	if (scr_viewmodel_fov.value < 10)
+		Cvar_SetQuick (&scr_viewmodel_fov, "10");
 	if (scr_fov.value > 170)
 		Cvar_SetQuick (&scr_fov, "170");
-
+	if (scr_viewmodel_fov.value > 170)
+		Cvar_SetQuick (&scr_viewmodel_fov, "170");
 	vid.recalc_refdef = 0;
 
 	//johnfitz -- rewrote this section
@@ -410,6 +414,8 @@ static void SCR_CalcRefdef (void)
 
 	r_refdef.fov_x = AdaptFovx(scr_fov.value, vid.width, vid.height);
 	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
+	r_refdef.viewmodel_fov_x = AdaptFovx(scr_viewmodel_fov.value, vid.width, vid.height);
+	r_refdef.viewmodel_fov_y = CalcFovy (r_refdef.viewmodel_fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
 
 	scr_vrect = r_refdef.vrect;
 }
@@ -495,9 +501,11 @@ void SCR_Init (void)
 	//johnfitz
 	Cvar_SetCallback (&scr_fov, SCR_Callback_refdef);
 	Cvar_SetCallback (&scr_fov_adapt, SCR_Callback_refdef);
+	Cvar_SetCallback (&scr_viewmodel_fov, SCR_Callback_refdef);
 	Cvar_SetCallback (&scr_viewsize, SCR_Callback_refdef);
 	Cvar_RegisterVariable (&scr_fov);
 	Cvar_RegisterVariable (&scr_fov_adapt);
+	Cvar_RegisterVariable (&scr_viewmodel_fov);
 	Cvar_RegisterVariable (&scr_viewsize);
 	Cvar_RegisterVariable (&scr_conspeed);
 	Cvar_RegisterVariable (&scr_showram);
@@ -890,7 +898,7 @@ void SCR_ScreenShot_f (void)
 		SCR_ScreenShot_Usage ();
 		return;
 	}
-	
+
 // find a file name to save it to
 	for (i=0; i<10000; i++)
 	{
@@ -1257,4 +1265,3 @@ void SCR_UpdateScreen (void)
 
 	GL_EndRendering ();
 }
-

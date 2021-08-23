@@ -48,6 +48,7 @@ vec3_t	vright;
 vec3_t	r_origin;
 
 float r_fovx, r_fovy; //johnfitz -- rendering fov may be different becuase of r_waterwarp and r_stereo
+float r_viewmodel_fovx, r_viewmodel_fovy;
 
 //
 // screen size info
@@ -231,7 +232,7 @@ void GLSLGamma_GammaCorrect (void)
 			Sys_Error("GLSLGamma_CreateShaders failed");
 		}
 	}
-	
+
 // copy the framebuffer to the texture
 	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly, glwidth, glheight);
 
@@ -259,9 +260,9 @@ void GLSLGamma_GammaCorrect (void)
 	glTexCoord2f (0, tmax);
 	glVertex2f (-1, 1);
 	glEnd ();
-	
+
 	GL_UseProgramFunc (0);
-	
+
 // clear cached binding
 	GL_ClearBindings ();
 }
@@ -626,6 +627,8 @@ void R_SetupView (void)
 	//johnfitz -- calculate r_fovx and r_fovy here
 	r_fovx = r_refdef.fov_x;
 	r_fovy = r_refdef.fov_y;
+	r_viewmodel_fovx = r_refdef.viewmodel_fov_x;
+	r_viewmodel_fovy = r_refdef.viewmodel_fov_y;
 	if (r_waterwarp.value)
 	{
 		if (viewcontents == CONTENTS_WATER || viewcontents == CONTENTS_SLIME || viewcontents == CONTENTS_LAVA)
@@ -633,6 +636,8 @@ void R_SetupView (void)
 			//variance is a percentage of width, where width = 2 * tan(fov / 2) otherwise the effect is too dramatic at high FOV and too subtle at low FOV.  what a mess!
 			r_fovx = atan(tan(DEG2RAD(r_refdef.fov_x) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / M_PI_DIV_180;
 			r_fovy = atan(tan(DEG2RAD(r_refdef.fov_y) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / M_PI_DIV_180;
+			r_viewmodel_fovx = atan(tan(DEG2RAD(r_refdef.viewmodel_fov_x) / 2) * (0.97 + sin(cl.time * 1.5) * 0.03)) * 2 / M_PI_DIV_180;
+			r_viewmodel_fovy = atan(tan(DEG2RAD(r_refdef.viewmodel_fov_y) / 2) * (1.03 - sin(cl.time * 1.5) * 0.03)) * 2 / M_PI_DIV_180;
 		}
 	}
 	//johnfitz
@@ -723,11 +728,13 @@ void R_DrawEntitiesOnList (qboolean alphapass) //johnfitz -- added parameter
 
 /*
 =============
-R_DrawViewModel -- johnfitz -- gutted
+R_DrawViewModel -- johnfitz -- gutted -- Spike -- Oakley
 =============
 */
 void R_DrawViewModel (void)
 {
+	mat4_t viewmodel;
+
 	if (!r_drawviewmodel.value || !r_drawentities.value || chase_active.value || skyroom_drawing/*silly depthrange*/)
 		return;
 
@@ -743,10 +750,17 @@ void R_DrawViewModel (void)
 		return;
 	//johnfitz
 
-	// hack the depth range to prevent view model from poking into walls
+	// Oakley -- Separate the viewmodel's FOV from the camera's FOV
+	// Good for people who like playing on high FOV values but don't like seeing the viewmodel cut off
+	Matrix4_ProjectionMatrix(r_viewmodel_fovx, r_viewmodel_fovy, NEARCLIP, gl_farclip.value, false, frustum_skew, 0, viewmodel);
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(viewmodel);
+	glMatrixMode(GL_MODELVIEW);
+
 	glDepthRange (0, 0.3);
 	R_DrawAliasModel (currententity);
 	glDepthRange (0, 1);
+	// Oakley
 }
 
 /*
@@ -1048,7 +1062,7 @@ void R_ScaleView_DeleteTexture (void)
 R_ScaleView
 
 The r_scale cvar allows rendering the 3D view at 1/2, 1/3, or 1/4 resolution.
-This function scales the reduced resolution 3D view back up to fill 
+This function scales the reduced resolution 3D view back up to fill
 r_refdef.vrect. This is for emulating a low-resolution pixellated look,
 or possibly as a perforance boost on slow graphics cards.
 ================
@@ -1299,4 +1313,3 @@ void R_RenderView (void)
 					rs_dynamiclightmaps);
 	//johnfitz
 }
-
