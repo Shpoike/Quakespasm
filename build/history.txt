@@ -1,0 +1,34 @@
+fov 130
+chase_active 1
+chase_active 0
+fov 130
+vid_borderless
+vid_borderless 1
+vid_restart
+viewmodel_fov
+fov
+viewmodel_fov 100
+viewmodel_fov 150
+viewmodel_fov 130
+viewmodel_fov 120
+viewmodel_fov 150
+viewmodel_fov 90
+fov 130
+impulse 9
+fov 130
+god
+map d3m1
+impulse 9
+sv_cheats 1
+cheats 
+sv_cheats 1
+impulse 9
+devmap dm4
+devmap dm3
+map dm4
+map dm3
+map dm2
+god
+fov 130
+noclip
+fov 130
