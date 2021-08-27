@@ -111,12 +111,11 @@ typedef struct entity_s
 	struct trailstate_s		*emitstate;		//spike -- for effects which are not so static.
 } entity_t;
 
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
 {
-	vrect_t		vrect;				// subwindow in video for refresh
+	vrect_t	vrect;				// subwindow in video for refresh
 									// FIXME: not need vrect next field here?
-	vrect_t		aliasvrect;			// scaled Alias version
+	vrect_t	aliasvrect;			// scaled Alias version
 	int			vrectright, vrectbottom;	// right & bottom screen coords
 	int			aliasvrectright, aliasvrectbottom;	// scaled Alias versions
 	float		vrectrightedge;			// rightmost right edge we care about,
@@ -134,10 +133,11 @@ typedef struct
 	float		xOrigin;			// should probably allways be 0.5
 	float		yOrigin;			// between be around 0.3 to 0.5
 
-	vec3_t		vieworg;
-	vec3_t		viewangles;
+	vec3_t	vieworg;
+	vec3_t	viewangles;
 
 	float		fov_x, fov_y;
+	float		viewmodel_fov_x, viewmodel_fov_y;
 
 	int			ambientlight;
 	qboolean	drawworld;
@@ -194,4 +194,3 @@ void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 #endif	/* _QUAKE_RENDER_H */
-

@@ -1050,30 +1050,16 @@ void R_DrawAliasModel (entity_t *e)
 	R_SetupEntityTransform (e, &lerpdata);
 
 	glsl = &r_alias_glsl[(paliashdr->poseverttype==PV_IQM)?ALIAS_GLSL_SKELETAL:ALIAS_GLSL_BASIC];
+	//
+	// cull it
+	//
+	if (R_CullModelForEntity(e))
+		return;
 
-	if (e->eflags & EFLAGS_VIEWMODEL)
-	{
-		//transform it relative to the view, by rebuilding the modelview matrix without the view position.
-		glPushMatrix ();
-		glLoadIdentity();
-		glRotatef (-90,  1, 0, 0);	    // put Z going up
-		glRotatef (90,  0, 0, 1);	    // put Z going up
-
-		glDepthRange (0, 0.3);
-	}
-	else
-	{
-		//
-		// cull it
-		//
-		if (R_CullModelForEntity(e))
-			return;
-
-		//
-		// transform it
-		//
-		glPushMatrix ();
-	}
+	//
+	// transform it
+	//
+	glPushMatrix();
 	R_RotateForEntity (lerpdata.origin, lerpdata.angles, e->netstate.scale);
 	glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	glScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
@@ -1130,7 +1116,7 @@ void R_DrawAliasModel (entity_t *e)
 		{
 			tx = paliashdr->gltextures[e->skinnum][anim];
 			fb = paliashdr->fbtextures[e->skinnum][anim];
-		} 
+		}
 		if (e->netstate.colormap && !gl_nocolors.value)
 		{
 			i = e - cl.entities;
@@ -1427,4 +1413,3 @@ void R_DrawAliasModel_ShowTris (entity_t *e)
 
 	glPopMatrix ();
 }
-
