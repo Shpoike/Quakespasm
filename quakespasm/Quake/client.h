@@ -352,6 +352,14 @@ extern	cvar_t	m_yaw;
 extern	cvar_t	m_forward;
 extern	cvar_t	m_side;
 
+extern	cvar_t	scr_fov;
+extern	cvar_t	host_maxfps;
+
+extern	cvar_t	r_scale;
+extern	cvar_t	r_lerpmodels;
+extern	cvar_t	r_lerpmove;
+extern	cvar_t	r_particles;
+extern	cvar_t	r_viewmodel_quake;
 
 #define	MAX_TEMP_ENTITIES			256		//johnfitz -- was 64
 

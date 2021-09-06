@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h"
 #include "bgmusic.h"
 #include "resource.h"
+#include "gl_texmgr.h"
 #if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
 #if defined(USE_SDL2)
 #include <SDL2/SDL.h>
@@ -1844,6 +1845,11 @@ void VID_SyncCvars (void)
 //==========================================================================
 
 enum {
+	VID_OPT_RENDERSCALE,
+	VID_OPT_FILTERING,
+	VID_OPT_INTERPOLATION,
+	VID_OPT_PARTICLES,
+	VID_OPT_VIEWMODEL,
 	VID_OPT_MODE,
 	VID_OPT_BPP,
 	VID_OPT_REFRESHRATE,
@@ -2123,6 +2129,8 @@ VID_MenuKey
 */
 static void VID_MenuKey (int key)
 {
+	int f = r_scale.value;
+
 	switch (key)
 	{
 	case K_ESCAPE:
@@ -2150,6 +2158,44 @@ static void VID_MenuKey (int key)
 		S_LocalSound ("misc/menu3.wav");
 		switch (video_options_cursor)
 		{
+		case VID_OPT_RENDERSCALE:
+			if (f > 1)
+			{
+				f = r_scale.value - 1;
+				Cvar_SetValue("r_scale", f);
+			}
+			else
+			{
+				Cvar_SetValue("r_scale", 4);
+			}
+			break;
+		case VID_OPT_FILTERING:
+			if (TexMgr_TextureModeIsLinear())
+				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
+			else
+				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
+			break;
+		case VID_OPT_INTERPOLATION:
+			if (r_lerpmodels.value == 1 && r_lerpmove.value == 1)
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
+			else if (!(r_lerpmodels.value == 1 && r_lerpmove.value == 1))
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
+			break;
+		case VID_OPT_PARTICLES:
+			if (r_particles.value == 1)
+				Cbuf_AddText("r_particles 2\n");
+			else if (r_particles.value == 2)
+				Cbuf_AddText("r_particles 1\n");
+			break;
+		case VID_OPT_VIEWMODEL:
+			Cbuf_AddText("toggle r_viewmodel_quake\n");
+			break;
 		case VID_OPT_MODE:
 			VID_Menu_ChooseNextMode (1);
 			break;
@@ -2174,6 +2220,44 @@ static void VID_MenuKey (int key)
 		S_LocalSound ("misc/menu3.wav");
 		switch (video_options_cursor)
 		{
+		case VID_OPT_RENDERSCALE:
+			if (f < 4)
+			{
+				f = r_scale.value + 1;
+				Cvar_SetValue("r_scale", f);
+			}
+			else
+			{
+				Cvar_SetValue("r_scale", 1);
+			}
+			break;
+		case VID_OPT_FILTERING:
+			if (TexMgr_TextureModeIsLinear())
+				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
+			else
+				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
+			break;
+		case VID_OPT_INTERPOLATION:
+			if (r_lerpmodels.value == 0 && r_lerpmove.value == 0)
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
+			else if (!(r_lerpmodels.value == 0 && r_lerpmove.value == 0))
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
+			break;
+		case VID_OPT_PARTICLES:
+			if (r_particles.value == 1)
+				Cbuf_AddText("r_particles 2\n");
+			else if (r_particles.value == 2)
+				Cbuf_AddText("r_particles 1\n");
+			break;
+		case VID_OPT_VIEWMODEL:
+			Cbuf_AddText("toggle r_viewmodel_quake\n");
+			break;
 		case VID_OPT_MODE:
 			VID_Menu_ChooseNextMode (-1);
 			break;
@@ -2200,6 +2284,44 @@ static void VID_MenuKey (int key)
 		m_entersound = true;
 		switch (video_options_cursor)
 		{
+		case VID_OPT_RENDERSCALE:
+			if (f > 1)
+			{
+				f = r_scale.value - 1;
+				Cvar_SetValue("r_scale", f);
+			}
+			else
+			{
+				Cvar_SetValue("r_scale", 4);
+			}
+			break;
+		case VID_OPT_FILTERING:
+			if (TexMgr_TextureModeIsLinear())
+				Cbuf_AddText("gl_texturemode GL_NEAREST_MIPMAP_LINEAR\n");
+			else
+				Cbuf_AddText("gl_texturemode GL_LINEAR_MIPMAP_LINEAR\n");
+			break;
+		case VID_OPT_INTERPOLATION:
+			if (r_lerpmodels.value == 1 && r_lerpmove.value == 1)
+			{
+				Cbuf_AddText("r_lerpmodels 0\n");
+				Cbuf_AddText("r_lerpmove 0\n");
+			}
+			else if (!(r_lerpmodels.value == 1 && r_lerpmove.value == 1))
+			{
+				Cbuf_AddText("r_lerpmodels 1\n");
+				Cbuf_AddText("r_lerpmove 1\n");
+			}
+			break;
+		case VID_OPT_PARTICLES:
+			if (r_particles.value == 1)
+				Cbuf_AddText("r_particles 2\n");
+			else if (r_particles.value == 2)
+				Cbuf_AddText("r_particles 1\n");
+			break;
+		case VID_OPT_VIEWMODEL:
+			Cbuf_AddText("toggle r_viewmodel_quake\n");
+			break;
 		case VID_OPT_MODE:
 			VID_Menu_ChooseNextMode (1);
 			break;
@@ -2268,6 +2390,38 @@ static void VID_MenuDraw (void)
 	{
 		switch (i)
 		{
+		case VID_OPT_RENDERSCALE:
+			M_Print(16, y, "      Render scale");
+			if ((int)r_scale.value == 1)
+				M_Print(184, y, "native");
+			else
+				M_Print(184, y, va("1/%i", (int)r_scale.value));
+			break;
+		case VID_OPT_FILTERING:
+			M_Print(16, y, "         Filtering");
+			if ((qboolean)TexMgr_TextureModeIsLinear())
+				M_Print(184, y, "linear");
+			else
+				M_Print(184, y, "nearest");
+			break;
+		case VID_OPT_INTERPOLATION:
+			M_Print(16, y, "     Interpolation");
+			M_DrawCheckbox(184, y, (int)r_lerpmodels.value && (int)r_lerpmove.value);
+			break;
+		case VID_OPT_PARTICLES:
+			M_Print(16, y, "         Particles");
+			if ((int)r_particles.value == 1)
+				M_Print(184, y, "circle");
+			else if ((int)r_particles.value == 2)
+				M_Print(184, y, "square");
+			break;
+		case VID_OPT_VIEWMODEL:
+			M_Print(16, y, "         Viewmodel");
+			if ((int)r_viewmodel_quake.value)
+				M_Print(184, y, "vanilla");
+			else
+				M_Print(184, y, "quakespasm");
+			break;
 		case VID_OPT_MODE:
 			M_Print (16, y, "        Video mode");
 			M_Print (184, y, va("%ix%i", (int)vid_width.value, (int)vid_height.value));

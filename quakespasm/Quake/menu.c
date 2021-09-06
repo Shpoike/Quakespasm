@@ -950,6 +950,8 @@ enum
 	OPT_CUSTOMIZE = 0,
 	OPT_CONSOLE,	// 1
 	OPT_DEFAULTS,	// 2
+	OPT_FOV,
+	OPT_FPS,
 	OPT_SCALE,
 	OPT_SCRSIZE,
 	OPT_GAMMA,
@@ -1002,6 +1004,18 @@ void M_AdjustSliders (int dir)
 
 	switch (options_cursor)
 	{
+	case OPT_FOV:	// field of view
+		f = scr_fov.value + dir * 1;
+		if (f > 120)	f = 120;
+		else if (f < 90)	f = 90;
+		Cvar_SetValue("fov", f);
+		break;
+	case OPT_FPS:	// frames per second
+		f = host_maxfps.value + dir * 10;
+		if (f > 500)	f = 500;
+		else if (f < 72)	f = 72;
+		Cvar_SetValue("host_maxfps", f);
+		break;
 	case OPT_SCALE:	// console and menu scale
 		l = ((vid.width + 31) / 32) / 10.0;
 		f = scr_conscale.value + dir * .1;
@@ -1154,6 +1168,16 @@ void M_Options_Draw (void)
 	M_Print (16, 32 + 8*OPT_CONSOLE,	"          Goto console");
 	// OPT_DEFAULTS:
 	M_Print (16, 32 + 8*OPT_DEFAULTS,	"          Reset config");
+
+	// OPT_FOV:
+	M_Print(16, 32 + 8 * OPT_FOV, "         Field of view");
+	r = (scr_fov.value - 90) / (120 - 90);
+	M_DrawSlider(220, 32 + 8 * OPT_FOV, r);
+
+	// OPT_FPS:
+	M_Print(16, 32 + 8 * OPT_FPS, "     Frames per second");
+	r = (host_maxfps.value - 72) / (500 - 72);
+	M_DrawSlider(220, 32 + 8 * OPT_FPS, r);
 
 	// OPT_SCALE:
 	M_Print (16, 32 + 8*OPT_SCALE,		"                 Scale");
