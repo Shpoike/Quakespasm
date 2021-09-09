@@ -537,9 +537,6 @@ R_SetupScene -- johnfitz -- this is the stuff that needs to be done once per eye
 */
 void R_SetupScene (void)
 {
-	R_PushDlights ();
-	R_AnimateLight ();
-	r_framecount++;
 	R_SetupGL ();
 }
 
@@ -552,6 +549,12 @@ void R_SetupView (void)
 {
 	int viewcontents;	//spike -- rewrote this a little
 	int i;
+
+	// Need to do those early because we now update dynamic light maps during R_MarkSurfaces
+	R_PushDlights ();
+	R_AnimateLight ();
+	r_framecount++;
+
 	Fog_SetupFrame (); //johnfitz
 
 // build the transformation matrix for the given view angles
