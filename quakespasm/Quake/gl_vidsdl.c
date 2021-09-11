@@ -1812,6 +1812,17 @@ void	VID_Toggle (void)
 	}
 }
 
+// For settings that are not applied during vid_restart
+typedef struct {
+	int				r_scale;
+	int				r_lerpmove;
+	int				r_lerpmodels;
+	int				r_viewmodel_quake;
+	char			*gl_texturemode;
+} vid_menu_settings_t;
+
+static vid_menu_settings_t menu_settings;
+
 /*
 ================
 VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
@@ -1834,6 +1845,12 @@ void VID_SyncCvars (void)
 		Cvar_SetQuick (&vid_vsync, VID_GetVSync() ? "1" : "0");
 	}
 
+	menu_settings.r_scale = CLAMP(1, (int)r_scale.value, 8);
+	menu_settings.r_lerpmove = CLAMP(0, (int)r_lerpmove.value, 1);
+	menu_settings.r_lerpmodels = CLAMP(0, (int)r_lerpmodels.value, 1);
+	menu_settings.r_viewmodel_quake = CLAMP(0, (int)r_viewmodel_quake.value, 1);
+	menu_settings.gl_texturemode = gl_texturemode.string;
+
 	vid_changed = false;
 }
 
@@ -1849,6 +1866,10 @@ enum {
 	VID_OPT_REFRESHRATE,
 	VID_OPT_FULLSCREEN,
 	VID_OPT_VSYNC,
+	VID_OPT_RENDER_SCALE,
+	VID_OPT_TEXTURE_FILTER,
+	VID_OPT_INTERPOLATION,
+	VID_OPT_VIEWMODEL,
 	VID_OPT_TEST,
 	VID_OPT_APPLY,
 	VIDEO_OPTIONS_ITEMS
@@ -2118,6 +2139,39 @@ static void VID_Menu_ChooseNextRate (int dir)
 
 /*
 ================
+VID_Menu_ChooseNextRenderScale
+================
+*/
+static void VID_Menu_ChooseNextRenderScale(int dir)
+{
+	int value = menu_settings.r_scale;
+
+	if (dir < 0)
+	{
+		if (value >= 4)
+			value = 8;
+		else if (value >= 2)
+			value = 4;
+		else
+			value = 2;
+	}
+	else
+	{
+		if (value <= 2)
+			value = 0;
+		else if (value <= 4)
+			value = 2;
+		else if (value <= 8)
+			value = 4;
+		else
+			value = 8;
+	}
+
+	menu_settings.r_scale = value;
+}
+
+/*
+================
 VID_MenuKey
 ================
 */
@@ -2165,6 +2219,19 @@ static void VID_MenuKey (int key)
 		case VID_OPT_VSYNC:
 			Cbuf_AddText ("toggle vid_vsync\n"); // kristian
 			break;
+		case VID_OPT_RENDER_SCALE:
+			VID_Menu_ChooseNextRenderScale(1);
+			break;
+		case VID_OPT_TEXTURE_FILTER:
+			menu_settings.gl_texturemode = (strstr(menu_settings.gl_texturemode, "GL_NEAREST")) ? "GL_LINEAR_MIPMAP_LINEAR" : "GL_NEAREST";
+			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
+			break;
 		default:
 			break;
 		}
@@ -2188,6 +2255,19 @@ static void VID_MenuKey (int key)
 			break;
 		case VID_OPT_VSYNC:
 			Cbuf_AddText ("toggle vid_vsync\n");
+			break;
+		case VID_OPT_RENDER_SCALE:
+			VID_Menu_ChooseNextRenderScale(-1);
+			break;
+		case VID_OPT_TEXTURE_FILTER:
+			menu_settings.gl_texturemode = (strstr(menu_settings.gl_texturemode, "GL_NEAREST")) ? "GL_LINEAR_MIPMAP_LINEAR" : "GL_NEAREST";
+			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
 			break;
 		default:
 			break;
@@ -2215,10 +2295,28 @@ static void VID_MenuKey (int key)
 		case VID_OPT_VSYNC:
 			Cbuf_AddText ("toggle vid_vsync\n");
 			break;
+		case VID_OPT_RENDER_SCALE:
+			VID_Menu_ChooseNextRenderScale(1);
+			break;
+		case VID_OPT_TEXTURE_FILTER:
+			menu_settings.gl_texturemode = (strstr(menu_settings.gl_texturemode, "GL_NEAREST")) ? "GL_LINEAR_MIPMAP_LINEAR" : "GL_NEAREST";
+			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
+			break;
 		case VID_OPT_TEST:
 			Cbuf_AddText ("vid_test\n");
 			break;
 		case VID_OPT_APPLY:
+			Cvar_SetValueQuick(&r_scale, menu_settings.r_scale);
+			Cvar_SetValueQuick(&r_lerpmove, menu_settings.r_lerpmove);
+			Cvar_SetValueQuick(&r_lerpmodels, menu_settings.r_lerpmodels);
+			Cvar_SetValueQuick(&r_viewmodel_quake, menu_settings.r_viewmodel_quake);
+			Cvar_SetQuick(&gl_texturemode, menu_settings.gl_texturemode);
 			Cbuf_AddText ("vid_restart\n");
 			key_dest = key_game;
 			m_state = m_none;
@@ -2290,6 +2388,23 @@ static void VID_MenuDraw (void)
 				M_DrawCheckbox (184, y, (int)vid_vsync.value);
 			else
 				M_Print (184, y, "N/A");
+			break;
+		case VID_OPT_RENDER_SCALE:
+			M_Print (16, y, "      Render Scale");
+			M_Print (184, y, (menu_settings.r_scale >= 2) ? va("1/%i", menu_settings.r_scale) : "off");
+			break;
+		case VID_OPT_TEXTURE_FILTER:
+			M_Print (16, y, "    Texture Filter");
+			M_Print (184, y, (strstr(menu_settings.gl_texturemode, "GL_NEAREST")) ? "off" : "on");
+			//M_Print(184, y, menu_settings.gl_texturemode);
+			break;
+		case VID_OPT_INTERPOLATION:
+			M_Print (16, y, "     Interpolation");
+			M_Print (184, y, (menu_settings.r_lerpmove) ? "on" : "off");
+			break;
+		case VID_OPT_VIEWMODEL:
+			M_Print (16, y, "        View Model");
+			M_Print (184, y, (menu_settings.r_viewmodel_quake) ? "classic" : "quakespasm");
 			break;
 		case VID_OPT_TEST:
 			y += 8; //separate the test and apply items

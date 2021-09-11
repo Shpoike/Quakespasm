@@ -170,6 +170,9 @@ extern	cvar_t	r_slimealpha;
 extern	cvar_t	r_dynamic;
 extern	cvar_t	r_novis;
 extern	cvar_t	r_scale;
+extern	cvar_t	r_lerpmove;
+extern	cvar_t	r_lerpmodels;
+extern	cvar_t	r_viewmodel_quake;
 
 extern	cvar_t	gl_clear;
 extern	cvar_t	gl_cull;
@@ -178,6 +181,8 @@ extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_nocolors;
+extern	cvar_t	gl_texturemode;
+
 
 extern	cvar_t	gl_playermip;
 

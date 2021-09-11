@@ -95,8 +95,8 @@ cvar_t	r_oldskyleaf = {"r_oldskyleaf", "0", CVAR_NONE};
 cvar_t	r_drawworld = {"r_drawworld", "1", CVAR_NONE};
 cvar_t	r_showtris = {"r_showtris", "0", CVAR_NONE};
 cvar_t	r_showbboxes = {"r_showbboxes", "0", CVAR_NONE};
-cvar_t	r_lerpmodels = {"r_lerpmodels", "1", CVAR_NONE};
-cvar_t	r_lerpmove = {"r_lerpmove", "1", CVAR_NONE};
+cvar_t	r_lerpmodels = {"r_lerpmodels", "1", CVAR_ARCHIVE};
+cvar_t	r_lerpmove = {"r_lerpmove", "1", CVAR_ARCHIVE};
 cvar_t	r_nolerp_list = {"r_nolerp_list", "progs/flame.mdl,progs/flame2.mdl,progs/braztall.mdl,progs/brazshrt.mdl,progs/longtrch.mdl,progs/flame_pyre.mdl,progs/v_saw.mdl,progs/v_xfist.mdl,progs/h2stuff/newfire.mdl", CVAR_NONE};
 cvar_t	r_noshadow_list = {"r_noshadow_list", "progs/flame2.mdl,progs/flame.mdl,progs/bolt1.mdl,progs/bolt2.mdl,progs/bolt3.mdl,progs/laser.mdl", CVAR_NONE};
 
@@ -488,7 +488,7 @@ void R_SetupGL (void)
 	if (!r_refdef.drawworld)
 		scale = 1;	//don't rescale. we can't handle rescaling transparent parts.
 	else
-		scale =  CLAMP(1, (int)r_scale.value, 4); // ericw -- see R_ScaleView
+		scale =  CLAMP(1, (int)r_scale.value, 8); // ericw -- see R_ScaleView
 	glViewport (glx + r_refdef.vrect.x,
 				gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
 				r_refdef.vrect.width / scale,
@@ -1060,7 +1060,7 @@ void R_ScaleView (void)
 	int srcx, srcy, srcw, srch;
 
 	// copied from R_SetupGL()
-	scale = CLAMP(1, (int)r_scale.value, 4);
+	scale = CLAMP(1, (int)r_scale.value, 8);
 	srcx = glx + r_refdef.vrect.x;
 	srcy = gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height;
 	srcw = r_refdef.vrect.width / scale;
