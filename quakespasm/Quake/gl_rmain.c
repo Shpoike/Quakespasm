@@ -488,7 +488,7 @@ void R_SetupGL (void)
 	if (!r_refdef.drawworld)
 		scale = 1;	//don't rescale. we can't handle rescaling transparent parts.
 	else
-		scale =  CLAMP(1, (int)r_scale.value, 4); // ericw -- see R_ScaleView
+		scale =  CLAMP(1, (int)r_scale.value, 8); // ericw -- see R_ScaleView
 	glViewport (glx + r_refdef.vrect.x,
 				gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height,
 				r_refdef.vrect.width / scale,
@@ -1060,7 +1060,7 @@ void R_ScaleView (void)
 	int srcx, srcy, srcw, srch;
 
 	// copied from R_SetupGL()
-	scale = CLAMP(1, (int)r_scale.value, 4);
+	scale = CLAMP(1, (int)r_scale.value, 8);
 	srcx = glx + r_refdef.vrect.x;
 	srcy = gly + glheight - r_refdef.vrect.y - r_refdef.vrect.height;
 	srcw = r_refdef.vrect.width / scale;
