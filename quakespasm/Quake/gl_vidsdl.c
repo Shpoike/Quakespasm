@@ -1815,6 +1815,9 @@ void	VID_Toggle (void)
 // For settings that are not applied during vid_restart
 typedef struct {
 	int				r_scale;
+	int				r_lerpmove;
+	int				r_lerpmodels;
+	int				r_viewmodel_quake;
 } vid_menu_settings_t;
 
 static vid_menu_settings_t menu_settings;
@@ -1842,6 +1845,9 @@ void VID_SyncCvars (void)
 	}
 
 	menu_settings.r_scale = CLAMP(1, (int)r_scale.value, 8);
+	menu_settings.r_lerpmove = CLAMP(0, (int)r_lerpmove.value, 1);
+	menu_settings.r_lerpmodels = CLAMP(0, (int)r_lerpmodels.value, 1);
+	menu_settings.r_viewmodel_quake = CLAMP(0, (int)r_viewmodel_quake.value, 1);
 
 	vid_changed = false;
 }
@@ -1859,6 +1865,8 @@ enum {
 	VID_OPT_FULLSCREEN,
 	VID_OPT_VSYNC,
 	VID_OPT_RENDER_SCALE,
+	VID_OPT_INTERPOLATION,
+	VID_OPT_VIEWMODEL,
 	VID_OPT_TEST,
 	VID_OPT_APPLY,
 	VIDEO_OPTIONS_ITEMS
@@ -2135,7 +2143,7 @@ static void VID_Menu_ChooseNextRenderScale(int dir)
 {
 	int value = menu_settings.r_scale;
 
-	if (dir > 0)
+	if (dir < 0)
 	{
 		if (value >= 4)
 			value = 8;
@@ -2209,7 +2217,14 @@ static void VID_MenuKey (int key)
 			Cbuf_AddText ("toggle vid_vsync\n"); // kristian
 			break;
 		case VID_OPT_RENDER_SCALE:
-			VID_Menu_ChooseNextRenderScale(-1);
+			VID_Menu_ChooseNextRenderScale(1);
+			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
 			break;
 		default:
 			break;
@@ -2236,7 +2251,14 @@ static void VID_MenuKey (int key)
 			Cbuf_AddText ("toggle vid_vsync\n");
 			break;
 		case VID_OPT_RENDER_SCALE:
-			VID_Menu_ChooseNextRenderScale(1);
+			VID_Menu_ChooseNextRenderScale(-1);
+			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
 			break;
 		default:
 			break;
@@ -2267,11 +2289,21 @@ static void VID_MenuKey (int key)
 		case VID_OPT_RENDER_SCALE:
 			VID_Menu_ChooseNextRenderScale(1);
 			break;
+		case VID_OPT_INTERPOLATION:
+			menu_settings.r_lerpmove = (menu_settings.r_lerpmodels) ? 0 : 1;
+			menu_settings.r_lerpmodels = (menu_settings.r_lerpmodels) ? 0 : 1;
+			break;
+		case VID_OPT_VIEWMODEL:
+			menu_settings.r_viewmodel_quake = (menu_settings.r_viewmodel_quake) ? 0 : 1;
+			break;
 		case VID_OPT_TEST:
 			Cbuf_AddText ("vid_test\n");
 			break;
 		case VID_OPT_APPLY:
 			Cvar_SetValueQuick(&r_scale, menu_settings.r_scale);
+			Cvar_SetValueQuick(&r_lerpmove, menu_settings.r_lerpmove);
+			Cvar_SetValueQuick(&r_lerpmodels, menu_settings.r_lerpmodels);
+			Cvar_SetValueQuick(&r_viewmodel_quake, menu_settings.r_viewmodel_quake);
 			Cbuf_AddText ("vid_restart\n");
 			key_dest = key_game;
 			m_state = m_none;
@@ -2347,6 +2379,14 @@ static void VID_MenuDraw (void)
 		case VID_OPT_RENDER_SCALE:
 			M_Print (16, y, "      Render Scale");
 			M_Print (184, y, (menu_settings.r_scale >= 2) ? va("1/%i", menu_settings.r_scale) : "off");
+			break;
+		case VID_OPT_INTERPOLATION:
+			M_Print (16, y, "     Interpolation");
+			M_Print (184, y, (menu_settings.r_lerpmove) ? "on" : "off");
+			break;
+		case VID_OPT_VIEWMODEL:
+			M_Print (16, y, "        View Model");
+			M_Print (184, y, (menu_settings.r_viewmodel_quake) ? "classic" : "quakespasm");
 			break;
 		case VID_OPT_TEST:
 			y += 8; //separate the test and apply items
