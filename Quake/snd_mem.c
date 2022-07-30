@@ -186,13 +186,13 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	info = GetWavinfo (s->name, data, com_filesize);
 	if (info.channels != 1 && info.channels != 2)
 	{
-		Con_Printf ("%s is a stereo sample\n",s->name);
+		Con_Printf ("%s is a stereo sample, not loaded!\n",s->name);
 		return NULL;
 	}
 
 	if (info.width != 1 && info.width != 2)
 	{
-		Con_Printf("%s is not 8 or 16 bit\n", s->name);
+		Con_Printf("%s is not 8 or 16 bit, not loaded!\n", s->name);
 		return NULL;
 	}
 
@@ -203,7 +203,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	if (info.samples == 0 || len == 0)
 	{
-		Con_Printf("%s has zero samples\n", s->name);
+		Con_Printf("%s has zero samples, not loaded!\n", s->name);
 		return NULL;
 	}
 
