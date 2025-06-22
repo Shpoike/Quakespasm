@@ -1203,6 +1203,14 @@ static void PF_sv_precache_sound (void)
 int SV_Precache_Model(const char *s)
 {
 	size_t i;
+
+	if (sv.state != ss_loading && !qcvm->precacheanytime)
+	{
+		Con_Warning ("PF_precache_model(\"%s\"): 'DP_SV_PRECACHEANYTIME' not checked, so precaches should only be done in spawn functions\n", s);
+		if (!developer.value)
+			qcvm->precacheanytime = true;	//don't spam too much
+	}
+
 	for (i = 0; i < MAX_MODELS; i++)
 	{
 		if (!sv.model_precache[i])
@@ -1234,33 +1242,8 @@ static void PF_sv_precache_model (void)
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString (s);
 
-	if (sv.state != ss_loading && !qcvm->precacheanytime)
-	{
-		Con_Warning ("PF_precache_model(\"%s\"): 'DP_SV_PRECACHEANYTIME' not checked, so precaches should only be done in spawn functions\n", s);
-		if (!developer.value)
-			qcvm->precacheanytime = true;	//don't spam too much
-	}
-
-	for (i = 0; i < MAX_MODELS; i++)
-	{
-		if (!sv.model_precache[i])
-		{
-			if (sv.state != ss_loading)
-			{
-				//let existing clients know about it
-				MSG_WriteByte(&sv.reliable_datagram, svcdp_precache);
-				MSG_WriteShort(&sv.reliable_datagram, i|0x8000);
-				MSG_WriteString(&sv.reliable_datagram, s);
-			}
-
-			sv.model_precache[i] = s;
-			sv.models[i] = Mod_ForName (s, i==1);
-			return;
-		}
-		if (!strcmp(sv.model_precache[i], s))
-			return;
-	}
-	PR_RunError ("PF_precache_model: overflow");
+	if (!SV_Precache_Model(s))
+		PR_RunError ("PF_precache_model: overflow");
 }
 
 
