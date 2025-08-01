@@ -1152,8 +1152,9 @@ void SV_WalkMove (edict_t *ent)
 	clip = SV_FlyMove (ent, qcvm->frametime, &steptrace);
 
 // check for stuckness, possibly due to the limited precision of floats
-// in the clipping hulls
-	if (clip)
+// in the clipping hulls. Disable when using pr_checkextension to avoid
+// https://github.com/Shpoike/Quakespasm/issues/50.
+	if (clip && !pr_checkextension.value)
 	{
 		if ( fabs(oldorg[1] - ent->v.origin[1]) < 0.03125
 		&& fabs(oldorg[0] - ent->v.origin[0]) < 0.03125 )
